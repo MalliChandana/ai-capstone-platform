@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | AI Capstone</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body {
+            background-color: #0b0f19;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .nav-link.btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 992px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-primary { background: rgba(79, 70, 229, 0.2); color: #a5b4fc; border: 1px solid rgba(79, 70, 229, 0.3); }
+
+        .btn-view-all {
+            color: #818cf8;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-view-all:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/admin/dashboard" class="brand">
+        <span>🛡️</span>
+        <span>Admin Control</span>
+    </a>
+    <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/admin/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/admin/students" class="nav-link">Students</a>
+        <a href="/admin/companies" class="nav-link">Companies</a>
+        <a href="/admin/projects" class="nav-link">Projects</a>
+        <a href="/admin/applications" class="nav-link">Applications</a>
+        <a href="/admin/reports" class="nav-link">Reports</a>
+        <a href="/admin/audit-logs" class="nav-link">Audit Logs</a>
+        <a href="/admin/logout" class="nav-link btn-logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>SaaS Platform Overview</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Welcome, <strong th:text="${adminName}">Administrator</strong>. Real-time platform metrics and activity.</p>
+        </div>
+        <div>
+            <a href="/admin/audit-logs" class="nav-link" style="background: var(--card-bg); border: 1px solid var(--border); color: white;">📜 View System Audit Trail</a>
+        </div>
+    </div>
+
+    <!-- STATS GRID -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">Registered Students</div>
+            <div class="stat-value" th:text="${totalStudents}">0</div>
+            <div class="stat-sub"><span style="color: #6ee7b7;" th:text="${activeStudents}">0</span> active accounts</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Registered Companies</div>
+            <div class="stat-value" th:text="${totalCompanies}">0</div>
+            <div class="stat-sub"><span style="color: #6ee7b7;" th:text="${activeCompanies}">0</span> verified partners</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Capstone Projects</div>
+            <div class="stat-value" th:text="${totalProjects}">0</div>
+            <div class="stat-sub"><span style="color: #a5b4fc;" th:text="${openProjects}">0</span> open for application</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Student Applications</div>
+            <div class="stat-value" th:text="${totalRegistrations}">0</div>
+            <div class="stat-sub"><span style="color: #fde047;" th:text="${pendingApps}">0</span> pending review</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Project Final Reports</div>
+            <div class="stat-value" th:text="${totalReports}">0</div>
+            <div class="stat-sub"><span style="color: #6ee7b7;" th:text="${reviewedReports}">0</span> reviewed & graded</div>
+        </div>
+    </div>
+
+    <!-- 2 COLUMN LAYOUT -->
+    <div class="grid-2">
+        <!-- RECENT AUDIT LOGS -->
+        <div class="section-card">
+            <h2>
+                <span>⚡ Live Activity Stream</span>
+                <a href="/admin/audit-logs" class="btn-view-all">View All Activity →</a>
+            </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Actor</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="log : ${recentLogs}">
+                        <td style="color: var(--text-muted);" th:text="${log.timestamp}">2026-08-28</td>
+                        <td th:text="${log.actorEmail}">user@example.com</td>
+                        <td>
+                            <span class="badge badge-primary" th:text="${log.actorRole}">STUDENT</span>
+                        </td>
+                        <td><strong th:text="${log.action}">LOGIN</strong></td>
+                        <td style="color: #cbd5e1; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${log.details}">Details...</td>
+                    </tr>
+                    <tr th:if="${recentLogs.isEmpty()}">
+                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No activity recorded yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- QUICK MANAGEMENT ACTIONS -->
+        <div>
+            <div class="section-card">
+                <h2><span>🛡️ Platform Governance</span></h2>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="/admin/students" class="nav-link" style="background: #0f172a; border: 1px solid var(--border); color: white; display: flex; justify-content: space-between;">
+                        <span>👥 Manage Students</span>
+                        <strong th:text="${totalStudents}">0</strong>
+                    </a>
+                    <a href="/admin/companies" class="nav-link" style="background: #0f172a; border: 1px solid var(--border); color: white; display: flex; justify-content: space-between;">
+                        <span>🏢 Manage Companies</span>
+                        <strong th:text="${totalCompanies}">0</strong>
+                    </a>
+                    <a href="/admin/projects" class="nav-link" style="background: #0f172a; border: 1px solid var(--border); color: white; display: flex; justify-content: space-between;">
+                        <span>📁 Moderate Projects</span>
+                        <strong th:text="${totalProjects}">0</strong>
+                    </a>
+                    <a href="/admin/applications" class="nav-link" style="background: #0f172a; border: 1px solid var(--border); color: white; display: flex; justify-content: space-between;">
+                        <span>📋 View Applications</span>
+                        <strong th:text="${totalRegistrations}">0</strong>
+                    </a>
+                    <a href="/admin/reports" class="nav-link" style="background: #0f172a; border: 1px solid var(--border); color: white; display: flex; justify-content: space-between;">
+                        <span>📊 Review Reports & PDFs</span>
+                        <strong th:text="${totalReports}">0</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

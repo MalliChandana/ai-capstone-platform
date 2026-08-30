@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capstone Reports & Submissions | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER NAVBAR */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border, #e2e8f0);
+            padding: 12px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #0f172a;
+            font-size: 18px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #1e293b, #4f46e5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: #4338ca;
+            background: #f5f3ff;
+        }
+
+        .nav-link.active {
+            color: #4338ca;
+            background: #ede9fe;
+            font-weight: 700;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            white-space: nowrap;
+        }
+
+        .notif-badge {
+            position: relative;
+            text-decoration: none;
+            color: #64748b;
+            font-size: 18px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .notif-badge:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .notif-count {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .btn-logout {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-logout:hover {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        @media (max-width: 900px) {
+            .navbar { padding: 12px 18px; flex-wrap: wrap; }
+            .nav-items { order: 3; width: 100%; justify-content: flex-start; margin-top: 6px; }
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .header-card h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .header-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .report-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .report-info h3 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .report-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .status-submitted { background: #fef3c7; color: #b45309; }
+        .status-reviewed { background: #dcfce7; color: #15803d; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-blue { background: var(--accent); color: white; }
+        .btn-outline { background: #f8fafc; color: var(--text-main); border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/company/dashboard" class="brand">
+        <div class="brand-icon">🏢</div>
+        <span>Company Portal</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/company/dashboard" class="nav-link">Dashboard</a>
+        <a href="/company/projects" class="nav-link">My Projects</a>
+        <a href="/company/project/post" class="nav-link">+ Post Project</a>
+        <a href="/company/registered-students" class="nav-link">Registered Students</a>
+        <a href="/company/progress" class="nav-link">Track Progress</a>
+        <a href="/company/reports" class="nav-link active">Project Reports</a>
+    </div>
+
+    <div class="user-menu">
+        <a href="/company/notifications" class="notif-badge" title="Notifications">
+            🔔
+            <span class="notif-count" th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}">0</span>
+        </a>
+        <a href="/company/logout" class="btn-logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="header-card">
+        <h1>📑 Capstone Project Deliverables & Reports</h1>
+        <p>Review final student submissions, provide feedback, grade projects, and export professional PDF documentation.</p>
+    </div>
+
+    <div th:if="${reports == null or reports.isEmpty()}" style="background:white; border-radius:18px; padding:48px; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:48px; margin-bottom:12px;">📁</div>
+        <h3>No Submitted Reports Yet</h3>
+        <p style="color:var(--text-muted); margin-top:8px;">When students complete their capstone milestones, their final reports will appear here.</p>
+    </div>
+
+    <div th:each="rep : ${reports}" class="report-card">
+        <div class="report-info">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                <h3 th:text="${rep.reportTitle != null ? rep.reportTitle : 'Final Project Report'}">Report Title</h3>
+                <span class="status-badge status-submitted" th:if="${rep.status == 'SUBMITTED'}">Submitted (Pending Review)</span>
+                <span class="status-badge status-reviewed" th:if="${rep.status == 'REVIEWED'}">Reviewed & Graded ✓</span>
+            </div>
+            <div class="report-meta">
+                Student: <strong th:text="${rep.studentName}">Student Name</strong> &nbsp;•&nbsp;
+                Project: <span th:text="${rep.projectTitle}">Project Title</span> &nbsp;•&nbsp;
+                Date: <span th:text="${rep.submittedDate}">2026-08-26</span>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+            <a th:href="@{/company/registration/report(registrationId=${rep.registrationId})}" class="btn btn-blue">🔍 Review & Grade</a>
+            <a th:href="@{/company/report/download/{id}(id=${rep.id})}" class="btn btn-outline">📥 Download PDF</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

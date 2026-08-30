@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER NAVBAR */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notif-badge {
+            position: relative;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            padding: 6px;
+        }
+
+        .notif-count {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .btn-logout {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #fecaca;
+        }
+
+        /* MAIN CONTENT */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        /* WELCOME BANNER */
+        .welcome-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            border-radius: 20px;
+            padding: 36px 40px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 25px rgba(49, 46, 129, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .welcome-card p {
+            color: #c7d2fe;
+            font-size: 15px;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .welcome-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-white:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        /* KPI STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .icon-indigo { background: #e0e7ff; color: #4338ca; }
+        .icon-blue { background: #e0f2fe; color: #0369a1; }
+        .icon-emerald { background: #dcfce7; color: #15803d; }
+        .icon-amber { background: #fef3c7; color: #b45309; }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* DASHBOARD SECTIONS */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 28px;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .link-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .link-more:hover {
+            text-decoration: underline;
+        }
+
+        /* PROJECT MINI CARDS */
+        .rec-item {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .rec-item:hover {
+            border-color: #cbd5e1;
+            background: #fafafa;
+        }
+
+        .rec-details h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .rec-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .match-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-sm:hover {
+            background: var(--primary-hover);
+        }
+
+        /* PROFILE SIDEBAR CARD */
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+        }
+
+        .profile-row:last-child {
+            border-bottom: none;
+        }
+
+        .profile-label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .profile-val {
+            color: var(--text-main);
+            font-weight: 700;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            background: #eef2ff;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        /* STATUS BADGES */
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .status-pending { background: #fef3c7; color: #b45309; }
+        .status-accepted { background: #dcfce7; color: #15803d; }
+        .status-progress { background: #e0e7ff; color: #4338ca; }
+        .status-completed { background: #dbeafe; color: #1d4ed8; }
+        .status-rejected { background: #fee2e2; color: #b91c1c; }
+
+        @media (max-width: 900px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+            .welcome-card { flex-direction: column; text-align: center; gap: 20px; }
+            .navbar { padding: 14px 18px; flex-wrap: wrap; }
+            .nav-items { order: 3; width: 100%; justify-content: center; margin-top: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/student/projects" class="nav-link">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu">
+        <a href="/student/notifications" class="notif-badge" title="Notifications">
+            🔔
+            <span class="notif-count" th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}">0</span>
+        </a>
+        <a href="/student/logout" class="btn-logout">Logout</a>
+    </div>
+</nav>
+
+<!-- MAIN CONTAINER -->
+<div class="container">
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-card">
+        <div>
+            <h1>Welcome back, <span th:text="${student.name}">Student</span>! 👋</h1>
+            <p>Your AI recommendation engine has analyzed your profile and discovered curated capstone opportunities tailored to your technical skills.</p>
+        </div>
+        <div class="welcome-actions">
+            <a href="/student/recommendations" class="btn-white">🎯 View AI Recommendations</a>
+        </div>
+    </div>
+
+    <!-- STATS KPI GRID -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon icon-indigo">🎯</div>
+            <div class="stat-info">
+                <h3 th:text="${topMatchScore} + '%'">0%</h3>
+                <p>Top AI Match Score</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-blue">📋</div>
+            <div class="stat-info">
+                <h3 th:text="${registeredCount}">0</h3>
+                <p>Registered Projects</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-emerald">🚀</div>
+            <div class="stat-info">
+                <h3 th:text="${activeCount}">0</h3>
+                <p>Active Capstones</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-amber">🏆</div>
+            <div class="stat-info">
+                <h3 th:text="${completedCount}">0</h3>
+                <p>Completed Capstones</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN TWO-COLUMN DASHBOARD LAYOUT -->
+    <div class="dashboard-layout">
+        
+        <!-- LEFT COLUMN: RECOMMENDATIONS & RECENT REGISTRATIONS -->
+        <div>
+            <!-- AI RECOMMENDATIONS PREVIEW -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>🤖 Top AI Recommendations</h2>
+                    <a href="/student/recommendations" class="link-more">View All Matches →</a>
+                </div>
+
+                <div th:if="${topRecommendations == null or topRecommendations.isEmpty()}" style="text-align:center; padding: 30px; color: var(--text-muted);">
+                    <p>No project recommendations yet. Update your skills or explore posted company projects.</p>
+                    <a href="/student/projects" class="btn-sm" style="display:inline-block; margin-top:12px;">Browse All Projects</a>
+                </div>
+
+                <div th:each="rec : ${topRecommendations}" class="rec-item">
+                    <div class="rec-details">
+                        <div class="match-badge">
+                            ⭐ <span th:text="${rec.matchPercentage}">85</span>% Match
+                        </div>
+                        <h4 style="margin-top: 6px;" th:text="${rec.project.title}">Project Title</h4>
+                        <p th:text="${rec.project.companyName} + ' • ' + ${rec.project.domain != null ? rec.project.domain : 'Technology'}">Company Name</p>
+                        <p style="font-size:12px; color: #475569; margin-bottom:0;" th:text="${rec.recommendationReason}">Reason</p>
+                    </div>
+                    <a th:href="@{/student/project/{id}(id=${rec.project.id})}" class="btn-sm">View Details</a>
+                </div>
+            </div>
+
+            <!-- MY RECENT APPLICATIONS -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>📋 My Project Applications</h2>
+                    <a href="/student/my-registrations" class="link-more">View All Applications →</a>
+                </div>
+
+                <div th:if="${recentRegistrations == null or recentRegistrations.isEmpty()}" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                    <p>You haven't registered for any capstone project yet.</p>
+                </div>
+
+                <div th:each="reg : ${recentRegistrations}" class="rec-item">
+                    <div class="rec-details">
+                        <h4 th:text="${reg.projectTitle}">Project Title</h4>
+                        <p style="margin-bottom:4px;">Applied: <span th:text="${reg.registrationDate}">2026-08-26</span></p>
+                        <div>
+                            <span class="status-badge status-pending" th:if="${reg.status == 'PENDING'}">Pending Review</span>
+                            <span class="status-badge status-accepted" th:if="${reg.status == 'ACCEPTED'}">Accepted</span>
+                            <span class="status-badge status-progress" th:if="${reg.status == 'IN_PROGRESS'}">In Progress (<span th:text="${reg.progress}">0</span>%)</span>
+                            <span class="status-badge status-completed" th:if="${reg.status == 'COMPLETED'}">Completed 🏆</span>
+                            <span class="status-badge status-rejected" th:if="${reg.status == 'REJECTED'}">Rejected</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a th:if="${reg.status == 'ACCEPTED' or reg.status == 'IN_PROGRESS'}" th:href="@{/student/progress(registrationId=${reg.id})}" class="btn-sm" style="background:#059669;">Update Progress</a>
+                        <a th:if="${reg.status == 'PENDING'}" href="/student/my-registrations" class="btn-sm" style="background:#64748b;">View Status</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: STUDENT PROFILE SUMMARY & QUICK ACTIONS -->
+        <div>
+            <!-- PROFILE SUMMARY -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>👤 Student Profile</h2>
+                    <a href="/student/skills" class="link-more">Edit Skills →</a>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Full Name</span>
+                    <span class="profile-val" th:text="${student.name}">Student Name</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Email</span>
+                    <span class="profile-val" th:text="${student.email}">student@email.com</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Department</span>
+                    <span class="profile-val" th:text="${student.department}">CSE</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Year of Study</span>
+                    <span class="profile-val" th:text="${student.year}">4th Year</span>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <span class="profile-label">Registered Skills</span>
+                    <div class="skill-tags">
+                        <span class="tag" th:each="sk : ${#strings.arraySplit(student.skills, ',')}" th:text="${#strings.trim(sk)}">Skill</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <span class="profile-label">Interests</span>
+                    <p style="font-size: 13px; color: #475569; margin-top: 4px;" th:text="${student.interests}">Interests</p>
+                </div>
+            </div>
+
+            <!-- QUICK SHORTCUTS -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>⚡ Quick Actions</h2>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="/student/recommendations" class="nav-link" style="border: 1px solid var(--border);">🎯 View AI Recommendations</a>
+                    <a href="/student/projects" class="nav-link" style="border: 1px solid var(--border);">🔎 Explore Capstone Projects</a>
+                    <a href="/student/skill-gap" class="nav-link" style="border: 1px solid var(--border);">📊 Analyze Skill Gap</a>
+                    <a href="/student/skills" class="nav-link" style="border: 1px solid var(--border);">🛠 Manage Technical Skills</a>
+                    <a href="/student/progress" class="nav-link" style="border: 1px solid var(--border);">🚀 Track Project Milestones</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

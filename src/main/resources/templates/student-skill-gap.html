@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Gap Analysis | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .header-card h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .project-selector-form {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .project-selector-form select {
+            flex: 1;
+            min-width: 280px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* SCORE HERO CARD */
+        .score-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            flex-wrap: wrap;
+        }
+
+        .score-circle {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 60%, transparent 61%),
+                        conic-gradient(var(--primary) calc(var(--score-pct) * 1%), #e2e8f0 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.15);
+            flex-shrink: 0;
+        }
+
+        .score-details h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .score-details p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 600px;
+        }
+
+        /* COMPARISON GRID */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .comp-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .comp-card.matched-card {
+            border-top: 4px solid var(--success);
+        }
+
+        .comp-card.gap-card {
+            border-top: 4px solid var(--danger);
+        }
+
+        .comp-card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* LEARNING ROADMAP */
+        .learning-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .learning-section h3 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .roadmap-card {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .roadmap-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 6px;
+        }
+
+        .roadmap-card p {
+            font-size: 13px;
+            color: #78350f;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+            .score-card { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link active">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}"
+                  style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px;">0</span>
+        </a>
+        <a href="/student/logout" class="btn btn-outline" style="font-size:13px; padding: 7px 14px; background: #fee2e2; color: #b91c1c; border: none; font-weight: 700; text-decoration: none;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- HEADER CARD & SELECTOR -->
+    <div class="header-card">
+        <h1>🔍 Skill Gap & Readiness Analysis</h1>
+        <p>Compare your declared student skills directly against any capstone project's required technologies to identify strengths, missing competencies, and learning recommendations.</p>
+
+        <form action="/student/skill-gap" method="get" class="project-selector-form">
+            <select name="projectId" onchange="this.form.submit()">
+                <option th:each="p : ${allProjects}"
+                        th:value="${p.id}"
+                        th:text="${p.title} + ' (' + ${p.companyName} + ')'"
+                        th:selected="${selectedProject != null and selectedProject.id == p.id}">
+                    Project Title
+                </option>
+            </select>
+            <button type="submit" class="btn btn-primary">Analyze Project</button>
+        </form>
+    </div>
+
+    <!-- EMPTY STATE IF NO PROJECTS -->
+    <div th:if="${selectedProject == null}" style="background:white; border-radius:18px; padding:48px; text-align:center; border:1px solid var(--border); margin-top:20px;">
+        <h3>No Projects Available for Analysis</h3>
+        <p style="color:var(--text-muted); margin-top:8px;">There are currently no capstone projects posted in the system to analyze.</p>
+        <a href="/student/projects" class="btn btn-primary" style="margin-top:16px;">Explore Projects</a>
+    </div>
+
+    <!-- ANALYSIS RESULT IF PROJECT SELECTED -->
+    <div th:if="${selectedProject != null and matchResult != null}">
+        
+        <!-- SCORE HERO CARD -->
+        <div class="score-card">
+            <div class="score-details">
+                <h2 th:text="${selectedProject.title}">Project Title</h2>
+                <p>
+                    🏢 <strong th:text="${selectedProject.companyName}">Company</strong> &nbsp;•&nbsp;
+                    🏷️ <span th:text="${selectedProject.domain != null ? selectedProject.domain : 'General Technology'}">Domain</span> &nbsp;•&nbsp;
+                    📅 Start: <span th:text="${selectedProject.startDate != null ? selectedProject.startDate : 'Flexible'}">Start Date</span>
+                </p>
+                <div style="margin-top: 12px; font-size: 14px; color: #4338ca; font-weight:600;" th:text="${matchResult.recommendationReason}">
+                    Recommendation reasoning...
+                </div>
+            </div>
+            
+            <div class="score-circle" th:style="'--score-pct: ' + ${matchResult.matchPercentage}">
+                <span th:text="${matchResult.matchPercentage} + '%'">85%</span>
+            </div>
+        </div>
+
+        <!-- COMPARISON GRID: MATCHED VS GAPS -->
+        <div class="comparison-grid">
+            <!-- MATCHED SKILLS -->
+            <div class="comp-card matched-card">
+                <h3 style="color: #15803d;">✅ Your Matching Skills (<span th:text="${matchResult.matchedSkills.size()}">0</span>)</h3>
+                <p style="font-size:13px; color: var(--text-muted); margin-bottom: 14px;">Skills you possess that directly satisfy this project's requirements:</p>
+                <div class="badge-list">
+                    <span class="badge-green" th:each="m : ${matchResult.matchedSkills}" th:text="${m}">Python</span>
+                    <span th:if="${matchResult.matchedSkills.isEmpty()}" style="font-size:13px; color: var(--text-muted);">No direct matching skills detected.</span>
+                </div>
+            </div>
+
+            <!-- SKILL GAPS -->
+            <div class="comp-card gap-card">
+                <h3 style="color: #b91c1c;">⚠️ Identified Skill Gaps (<span th:text="${matchResult.missingSkills.size()}">0</span>)</h3>
+                <p style="font-size:13px; color: var(--text-muted); margin-bottom: 14px;">Prerequisite technical skills required to succeed in this project:</p>
+                <div class="badge-list">
+                    <span class="badge-red" th:each="mis : ${matchResult.missingSkills}" th:text="${mis}">Deep Learning</span>
+                    <span th:if="${matchResult.missingSkills.isEmpty()}" style="font-size:13px; color: #15803d; font-weight:600;">No skill gaps found! You are 100% prepared! 🎉</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIONABLE LEARNING ROADMAP -->
+        <div class="learning-section">
+            <h3>📚 Recommended Learning & Preparation Topics</h3>
+            <p style="font-size:14px; color: var(--text-muted); margin-bottom: 20px;">
+                We recommend studying these topics before or during your capstone project execution:
+            </p>
+            <div class="roadmap-grid">
+                <div class="roadmap-card" th:each="topic : ${matchResult.learningRecommendations}">
+                    <h4 th:text="${topic}">Neural Networks & PyTorch</h4>
+                    <p>Review core concepts, tutorials, and practical implementation patterns.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div style="display:flex; gap:12px; margin-bottom: 40px; flex-wrap:wrap;">
+            <form th:action="@{/student/project/register}" method="post" style="display:inline;">
+                <input type="hidden" name="projectId" th:value="${selectedProject.id}">
+                <button type="submit" class="btn btn-primary" style="padding: 13px 28px; font-size:15px;">📝 Apply for this Project</button>
+            </form>
+            <a th:href="@{/student/project/{id}(id=${selectedProject.id})}" class="btn" style="background:#f1f5f9; color:var(--text-main); border:1px solid var(--border);">View Project Details</a>
+            <a href="/student/recommendations" class="btn" style="background:#f1f5f9; color:var(--text-main); border:1px solid var(--border);">← Back to Recommendations</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

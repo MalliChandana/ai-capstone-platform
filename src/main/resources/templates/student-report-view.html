@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Project Report | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .report-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .feedback-banner {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+
+        .feedback-banner h3 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #15803d;
+            margin-bottom: 6px;
+        }
+
+        .section-block {
+            margin-bottom: 24px;
+        }
+
+        .section-block h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1e1b4b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-block p {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: #f8fafc;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link active">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}"
+                  style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px;">0</span>
+        </a>
+        <a href="/student/logout" class="btn btn-outline" style="font-size:13px; padding: 7px 14px; background: #fee2e2; color: #b91c1c; border: none; font-weight: 700; text-decoration: none;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="card">
+        
+        <div class="report-header">
+            <div>
+                <h1 th:text="${report.reportTitle != null ? report.reportTitle : 'Final Project Report'}">Project Report Title</h1>
+                <div style="font-size:13px; color: var(--text-muted);">
+                    Project: <strong th:text="${report.projectTitle}">Project Title</strong> &nbsp;•&nbsp;
+                    Submitted: <span th:text="${report.submittedDate}">2026-08-26</span>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <a th:href="@{/student/report/download/{id}(id=${report.id})}" class="btn btn-primary">📥 Download PDF Report</a>
+                <a th:href="@{/student/report/submit(registrationId=${registration.id})}" class="btn btn-outline">✏️ Edit Report</a>
+            </div>
+        </div>
+
+        <!-- COMPANY FEEDBACK SECTION IF REVIEWED -->
+        <div class="feedback-banner" th:if="${report.companyFeedback != null and !report.companyFeedback.isEmpty()}">
+            <h3>🏢 Company Review & Evaluation</h3>
+            <p style="font-size:14px; color: #166534; line-height:1.6;" th:text="${report.companyFeedback}">Company evaluation comments...</p>
+            <div style="margin-top:8px; font-size:13px; color:#14532d; font-weight:700;" th:if="${report.scoreOrGrade != null}">
+                Grade / Score: <span th:text="${report.scoreOrGrade}">A+ (95/100)</span>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h3>1. Abstract</h3>
+            <p th:text="${report.abstractText}">Abstract text...</p>
+        </div>
+
+        <div class="section-block">
+            <h3>2. Project Objectives</h3>
+            <p th:text="${report.objectives}">Objectives text...</p>
+        </div>
+
+        <div class="section-block">
+            <h3>3. Technologies & Architecture Stack</h3>
+            <p th:text="${report.technologiesUsed}">Technologies text...</p>
+        </div>
+
+        <div class="section-block">
+            <h3>4. Methodology & Implementation</h3>
+            <p th:text="${report.methodology}">Methodology text...</p>
+        </div>
+
+        <div class="section-block">
+            <h3>5. Results & Discussion</h3>
+            <p th:text="${report.results}">Results text...</p>
+        </div>
+
+        <div class="section-block">
+            <h3>6. Conclusion</h3>
+            <p th:text="${report.conclusion}">Conclusion text...</p>
+        </div>
+
+        <div class="section-block" th:if="${report.futureScope != null and !report.futureScope.isEmpty()}">
+            <h3>7. Future Scope</h3>
+            <p th:text="${report.futureScope}">Future scope text...</p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

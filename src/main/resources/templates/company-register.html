@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Registration | AI Capstone Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-hover: #1e293b;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top right, #e2e8f0 0%, #f8fafc 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: var(--text-main);
+        }
+        .auth-container {
+            width: 100%;
+            max-width: 620px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.07);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .brand-badge {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.25);
+        }
+        .auth-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text-main);
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+        .btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+            margin-top: 8px;
+        }
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .auth-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-header">
+        <div class="brand-badge">🏢</div>
+        <h1>Register Organization</h1>
+        <p>Post industry capstones and collaborate with top engineering students</p>
+    </div>
+
+    <div class="alert" th:if="${error}" th:text="${error}"></div>
+
+    <form action="/company/register" method="post">
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="companyName">Company / Organization Name *</label>
+                <input type="text" id="companyName" name="companyName" placeholder="e.g. Acme AI Technologies" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Official Company Email *</label>
+                <input type="email" id="email" name="email" placeholder="contact@acme.ai" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" placeholder="Min. 6 characters" required>
+            </div>
+
+            <div class="form-group">
+                <label for="industry">Industry Domain</label>
+                <input type="text" id="industry" name="industry" placeholder="e.g. Artificial Intelligence, FinTech">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" placeholder="e.g. San Francisco, CA / Remote">
+            </div>
+
+            <div class="form-group full-width">
+                <label for="website">Company Website</label>
+                <input type="url" id="website" name="website" placeholder="https://www.company.com">
+            </div>
+
+            <div class="form-group full-width">
+                <label for="description">Company Overview</label>
+                <textarea id="description" name="description" placeholder="Brief summary of your company's mission and engineering domains..."></textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Register Company Account</button>
+    </form>
+
+    <div class="auth-footer">
+        Already registered? <a href="/company/login">Sign In here</a>
+    </div>
+</div>
+
+</body>
+</html>

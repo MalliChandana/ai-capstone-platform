@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .card h1 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notif-item {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notif-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .notif-msg {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .notif-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            white-space: nowrap;
+        }
+
+        .btn-outline {
+            background: #f8fafc;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+        </a>
+        <a href="/student/logout" class="btn btn-outline" style="font-size:13px; padding: 7px 14px; background: #fee2e2; color: #b91c1c; border: none; font-weight: 700; text-decoration: none;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1>🔔 Student Notifications</h1>
+
+        <div th:if="${notifications == null or notifications.isEmpty()}" style="text-align:center; padding: 40px; color: var(--text-muted);">
+            <div style="font-size: 36px; margin-bottom: 12px;">🔕</div>
+            <p>You have no notifications at this time.</p>
+        </div>
+
+        <div th:each="n : ${notifications}" class="notif-item">
+            <div>
+                <div class="notif-title" th:text="${n.title}">Notification Title</div>
+                <div class="notif-msg" th:text="${n.message}">Notification message body...</div>
+                <div class="notif-time">📅 <span th:text="${n.createdAt}">2026-08-26 12:00</span></div>
+            </div>
+            <div th:if="${n.link != null and !n.link.isEmpty()}">
+                <a th:href="${n.link}" class="btn btn-primary">View →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

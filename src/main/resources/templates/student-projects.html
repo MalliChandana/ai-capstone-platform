@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Projects | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .container {
+            max-width: 1150px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        /* SEARCH & FILTER BAR */
+        .filter-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: #f8fafc;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-applied {
+            background: #e2e8f0;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        /* PROJECT CARDS */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .project-header h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        .score-badge {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .project-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+
+        .project-desc {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .skill-tag {
+            background: #eef2ff;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .card-footer {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            margin-top: auto;
+        }
+
+        .card-footer .btn {
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .filter-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link active">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}"
+                  style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px;">0</span>
+        </a>
+        <a href="/student/logout" class="btn btn-outline" style="font-size:13px; padding: 7px 14px; background: #fee2e2; color: #b91c1c; border: none; font-weight: 700;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- SEARCH & FILTER BAR -->
+    <div class="filter-bar">
+        <form action="/student/projects" method="get" class="filter-form">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="🔍 Search projects by title, keyword, company...">
+            
+            <select name="domain">
+                <option value="ALL">All Domains</option>
+                <option th:each="d : ${distinctDomains}" th:value="${d}" th:text="${d}" th:selected="${domain == d}">Domain</option>
+            </select>
+
+            <select name="status">
+                <option value="ALL">All Statuses</option>
+                <option value="OPEN" th:selected="${status == 'OPEN'}">Open</option>
+                <option value="IN_PROGRESS" th:selected="${status == 'IN_PROGRESS'}">In Progress</option>
+                <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Completed</option>
+            </select>
+
+            <select name="sortBy">
+                <option value="matchDesc" th:selected="${sortBy == 'matchDesc' or sortBy == null}">Highest AI Match</option>
+                <option value="startDate" th:selected="${sortBy == 'startDate'}">Start Date</option>
+                <option value="titleAsc" th:selected="${sortBy == 'titleAsc'}">Project Title (A-Z)</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+
+    <!-- EMPTY MESSAGE -->
+    <div th:if="${projectMatches == null or projectMatches.isEmpty()}" style="background:white; border-radius:18px; padding:48px; text-align:center; border:1px solid var(--border);">
+        <h3>No Matching Projects Found</h3>
+        <p style="color:var(--text-muted); margin-top:8px;">Try adjusting your search criteria or clearing filters.</p>
+        <a href="/student/projects" class="btn btn-outline" style="margin-top:16px;">Reset All Filters</a>
+    </div>
+
+    <!-- PROJECTS GRID -->
+    <div class="projects-grid">
+        <div th:each="item : ${projectMatches}" class="project-card">
+            <div>
+                <div class="project-header">
+                    <h3 th:text="${item.project.title}">Project Title</h3>
+                    <span class="score-badge">⭐ <span th:text="${item.matchPercentage}">85</span>%</span>
+                </div>
+
+                <div class="project-meta">
+                    🏢 <strong th:text="${item.project.companyName}">Company</strong> &nbsp;•&nbsp;
+                    🏷️ <span th:text="${item.project.domain != null ? item.project.domain : 'Technology'}">Domain</span>
+                </div>
+
+                <p class="project-desc" th:text="${item.project.description}">Project description...</p>
+
+                <div class="skills-container">
+                    <span class="skill-tag" th:each="sk : ${#strings.arraySplit(item.project.requiredSkills, ',')}" th:text="${#strings.trim(sk)}">Skill</span>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <!-- Register or Applied -->
+                <form th:if="${!registeredProjectIds.contains(item.project.id)}" th:action="@{/student/project/register}" method="post" style="flex:1;">
+                    <input type="hidden" name="projectId" th:value="${item.project.id}">
+                    <button type="submit" class="btn btn-primary" style="width:100%;">📝 Register</button>
+                </form>
+                <button th:if="${registeredProjectIds.contains(item.project.id)}" class="btn btn-applied" disabled>✓ Applied</button>
+
+                <a th:href="@{/student/project/{id}(id=${item.project.id})}" class="btn btn-outline">Details</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

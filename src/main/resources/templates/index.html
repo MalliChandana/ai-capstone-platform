@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Capstone | AI-Powered Project Recommendation & Management Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.85);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .brand-text {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            padding: 90px 24px 60px;
+            text-align: center;
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 30px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1.2px;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* ROLES SECTION */
+        .roles-container {
+            max-width: 1100px;
+            margin: 40px auto 80px;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+        }
+
+        .role-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: #cbd5e1;
+        }
+
+        .role-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .student-icon {
+            background: #eef2ff;
+            color: var(--primary);
+        }
+
+        .company-icon {
+            background: #ecfeff;
+            color: var(--secondary);
+        }
+
+        .role-card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .role-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .feature-bullets {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .feature-bullets li {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-bullets li span {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .role-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .role-actions .btn {
+            flex: 1;
+        }
+
+        /* FEATURES GRID */
+        .features-section {
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 80px 24px;
+        }
+
+        .features-header {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto 50px;
+        }
+
+        .features-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .features-header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .grid-4 {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            transition: transform 0.2s;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .feature-item .icon-box {
+            font-size: 30px;
+            margin-bottom: 16px;
+        }
+
+        .feature-item h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-item p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            max-width: 780px;
+            width: 100%;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .modal-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .modal-header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .modal-card {
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .modal-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .modal-card.company-card:hover {
+            border-color: #0f172a;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        }
+
+        .modal-card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .modal-card-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .modal-card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 24px;
+            flex: 1;
+        }
+
+        .modal-btn-student {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            transition: background 0.2s;
+        }
+
+        .modal-btn-student:hover {
+            background: var(--primary-hover);
+        }
+
+        .modal-btn-company {
+            background: #0f172a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            transition: background 0.2s;
+        }
+
+        .modal-btn-company:hover {
+            background: #1e293b;
+        }
+
+        .modal-login-link {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .modal-login-link a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .modal-login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-card.company-card .modal-login-link a {
+            color: #0f172a;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 16px 20px; }
+            .hero h1 { font-size: 34px; }
+            .hero p { font-size: 16px; }
+            .role-actions { flex-direction: column; }
+            .modal-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 28px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="brand">
+        <div class="brand-icon">✨</div>
+        <div class="brand-text">AI<span>Capstone</span></div>
+    </a>
+    <div class="nav-links">
+        <a href="/student/login" class="nav-link">Student Portal</a>
+        <a href="/company/login" class="nav-link">Company Portal</a>
+        <a href="/get-started" class="btn btn-primary" onclick="openRoleModal(event)">Get Started</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="badge-pill">
+        🤖 Intelligent Capstone Recommendation & Management Platform 2.0
+    </div>
+    <h1>
+        Build the Right Capstone. <br>
+        <span class="gradient-text">With the Right Industry Partner.</span>
+    </h1>
+    <p>
+        An intelligent platform connecting students with real-world capstone projects through AI-powered matching, skill-gap analysis, collaboration, progress tracking, and project evaluation.
+    </p>
+    <div class="hero-cta">
+        <a href="/student/login" class="btn btn-primary" style="padding: 14px 28px; font-size: 15px;">
+            🔍 Explore Projects
+        </a>
+        <a href="/student/register" class="btn btn-outline" style="padding: 14px 28px; font-size: 15px;">
+            🎓 Join as Student
+        </a>
+        <a href="/company/register" class="btn btn-outline" style="padding: 14px 28px; font-size: 15px;">
+            🏢 For Companies
+        </a>
+    </div>
+</section>
+
+<!-- ROLES SECTION -->
+<div class="roles-container">
+    <!-- STUDENT PORTAL -->
+    <div class="role-card">
+        <div>
+            <div class="role-icon student-icon">🎓</div>
+            <h2>For Students</h2>
+            <p>Discover projects tailored to your academic year, technical skills, and career interests with instant match scores.</p>
+            <ul class="feature-bullets">
+                <li><span>✓</span> AI-Powered Project Recommendations</li>
+                <li><span>✓</span> Interactive Skill Gap & Learning Paths</li>
+                <li><span>✓</span> 7-Stage Milestone & Progress Tracking</li>
+                <li><span>✓</span> Structured Report Submission & PDF Download</li>
+            </ul>
+        </div>
+        <div class="role-actions">
+            <a href="/student/login" class="btn btn-primary">Login</a>
+            <a href="/student/register" class="btn btn-outline">Register</a>
+        </div>
+    </div>
+
+    <!-- COMPANY PORTAL -->
+    <div class="role-card">
+        <div>
+            <div class="role-icon company-icon">🏢</div>
+            <h2>For Companies</h2>
+            <p>Post real-world project requirements, review matched student applicants, monitor milestones, and evaluate submissions.</p>
+            <ul class="feature-bullets">
+                <li><span>✓</span> Easy Project Posting & Skill Definition</li>
+                <li><span>✓</span> Applicant Review & Instant Accept / Reject</li>
+                <li><span>✓</span> Real-Time Milestone & Progress Monitoring</li>
+                <li><span>✓</span> Final Report Review, Scoring & PDF Export</li>
+            </ul>
+        </div>
+        <div class="role-actions">
+            <a href="/company/login" class="btn btn-primary">Login</a>
+            <a href="/company/register" class="btn btn-outline">Register</a>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURES SECTION -->
+<section class="features-section">
+    <div class="features-header">
+        <h2>End-to-End Capstone Management</h2>
+        <p>A unified modern workflow connecting students, academic mentors, and enterprise organizations seamlessly.</p>
+    </div>
+
+    <div class="grid-4">
+        <div class="feature-item">
+            <div class="icon-box">🎯</div>
+            <h3>Smart AI Matching</h3>
+            <p>Calculates precise relevance scores based on student profile, required project technologies, and domain interests.</p>
+        </div>
+
+        <div class="feature-item">
+            <div class="icon-box">📊</div>
+            <h3>Skill Gap Analysis</h3>
+            <p>Highlights matched skills vs missing prerequisites and suggests curated learning topics to close the knowledge gap.</p>
+        </div>
+
+        <div class="feature-item">
+            <div class="icon-box">🚀</div>
+            <h3>Milestone Tracking</h3>
+            <p>Structured 7-phase execution from Planning to Testing and Final Review with live progress synchronization.</p>
+        </div>
+
+        <div class="feature-item">
+            <div class="icon-box">📄</div>
+            <h3>Evaluation & Reports</h3>
+            <p>Comprehensive structured report submission with company grading, feedback loops, and one-click PDF generation.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ROLE SELECTION MODAL -->
+<div id="roleModal" class="modal-overlay" onclick="handleBackdropClick(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeRoleModal()" title="Close">✕</button>
+        <div class="modal-header">
+            <div class="badge-pill" style="margin-bottom: 12px;">✨ AI Capstone Portal</div>
+            <h2>How would you like to get started?</h2>
+            <p>Select your user role to create an account and begin</p>
+        </div>
+        <div class="modal-grid">
+            <!-- OPTION 1: STUDENT -->
+            <div class="modal-card">
+                <div>
+                    <div class="modal-card-icon">🎓</div>
+                    <div class="modal-card-title">Student</div>
+                    <p class="modal-card-desc">
+                        Find AI-matched capstone projects, collaborate with companies, track progress, and submit project reports.
+                    </p>
+                </div>
+                <div>
+                    <a href="/student/register" class="modal-btn-student">Create Student Account</a>
+                    <div class="modal-login-link">
+                        Already a Student? <a href="/student/login">Student Login</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTION 2: COMPANY -->
+            <div class="modal-card company-card">
+                <div>
+                    <div class="modal-card-icon">🏢</div>
+                    <div class="modal-card-title">Company</div>
+                    <p class="modal-card-desc">
+                        Post real-world capstone projects, find suitable students, track collaboration, and review project reports.
+                    </p>
+                </div>
+                <div>
+                    <a href="/company/register" class="modal-btn-company">Create Company Account</a>
+                    <div class="modal-login-link">
+                        Already a Company? <a href="/company/login">Company Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>AI Capstone SaaS Platform © 2026. Built with Spring Boot, Thymeleaf & Modern Web Standards. &nbsp;•&nbsp; <a href="/admin/login" style="color: #6366f1; text-decoration: none; font-weight: 600;">🛡️ Admin Portal</a></p>
+</footer>
+
+<script>
+    function openRoleModal(e) {
+        if (e) e.preventDefault();
+        const modal = document.getElementById('roleModal');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRoleModal() {
+        const modal = document.getElementById('roleModal');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    function handleBackdropClick(e) {
+        if (e.target.id === 'roleModal') {
+            closeRoleModal();
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeRoleModal();
+        }
+    });
+</script>
+
+</body>
+</html>

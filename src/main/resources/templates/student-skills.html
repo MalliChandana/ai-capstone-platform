@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Skills & Profile | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .card h1, .card h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .skill-badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .skill-pill {
+            background: #eef2ff;
+            color: var(--primary);
+            border: 1px solid #c7d2fe;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text-main);
+            min-height: 100px;
+            outline: none;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link active">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}"
+                  style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px;">0</span>
+        </a>
+        <a href="/student/logout" class="btn" style="background:#fee2e2; color:#b91c1c; font-size:13px; padding: 7px 14px; border:none; font-weight: 700;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="alert-success" th:if="${message}" th:text="${message}"></div>
+
+    <!-- CURRENT SKILLS VIEW -->
+    <div class="card">
+        <h1>📚 Active Technical Skillset</h1>
+        <p>These technical skills are analyzed in real-time by the recommendation engine to calculate compatibility percentages against capstone projects.</p>
+
+        <div class="skill-badge-list">
+            <span class="skill-pill" th:each="sk : ${skillList}">
+                💻 <span th:text="${sk}">Skill</span>
+            </span>
+            <span th:if="${skillList == null or skillList.isEmpty()}" style="color: var(--text-muted);">No skills declared yet. Add them below!</span>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE SKILLS & INTERESTS -->
+    <div class="card">
+        <h2>🛠 Update Skills & Research Interests</h2>
+        <p>Keep your technical stack updated as you learn new tools, frameworks, and programming languages.</p>
+
+        <form action="/student/skills/update" method="post">
+            <div class="form-group">
+                <label for="skills">Technical Skills (Comma Separated)</label>
+                <textarea id="skills" name="skills" th:text="${student.skills}" required></textarea>
+                <small style="color: var(--text-muted); font-size: 12px; display:block; margin-top:4px;">
+                    Example: Python, Java, Machine Learning, TensorFlow, SQL, React, Docker, Spring Boot
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="interests">Areas of Interest (Comma Separated)</label>
+                <textarea id="interests" name="interests" th:text="${student.interests}"></textarea>
+                <small style="color: var(--text-muted); font-size: 12px; display:block; margin-top:4px;">
+                    Example: Artificial Intelligence, Cloud Infrastructure, Natural Language Processing, Cyber Security
+                </small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Profile & Recalculate Matches</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${project.title} + ' | AI Capstone'">Project Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .details-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .header-top h1 {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.25;
+            color: var(--text-main);
+        }
+
+        .meta-tags {
+            display: flex;
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .meta-pill {
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .score-pill {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #334155;
+            margin: 24px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .desc-text {
+            color: #475569;
+            font-size: 15px;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+
+        .skill-badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+
+        .ai-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 28px 0;
+        }
+
+        .ai-box h3 {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: #f8fafc;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-applied {
+            background: #e2e8f0;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link active">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}"
+                  style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px;">0</span>
+        </a>
+        <a href="/student/logout" class="btn btn-outline" style="font-size:13px; padding: 7px 14px; background: #fee2e2; color: #b91c1c; border: none; font-weight: 700; text-decoration: none;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="details-card">
+        
+        <div class="header-top">
+            <div>
+                <h1 th:text="${project.title}">Capstone Project Title</h1>
+                <div style="font-size:16px; color: var(--primary); font-weight:700; margin-top:4px;">
+                    🏢 <span th:text="${project.companyName}">Company Name</span>
+                </div>
+            </div>
+            <div class="score-pill" th:if="${matchResult != null}">
+                ⭐ <span th:text="${matchResult.matchPercentage}">85</span>% AI Match
+            </div>
+        </div>
+
+        <div class="meta-tags">
+            <span class="meta-pill" th:if="${project.domain != null}">🏷️ <span th:text="${project.domain}">Domain</span></span>
+            <span class="meta-pill" th:if="${project.duration != null}">⏱️ <span th:text="${project.duration}">Duration</span></span>
+            <span class="meta-pill" th:if="${project.difficultyLevel != null}">⚡ <span th:text="${project.difficultyLevel}">Level</span></span>
+            <span class="meta-pill">📅 Start: <span th:text="${project.startDate != null ? project.startDate : 'Immediate'}">Date</span></span>
+            <span class="meta-pill">📌 Status: <span th:text="${project.status}">OPEN</span></span>
+        </div>
+
+        <!-- AI MATCH ANALYSIS BOX -->
+        <div class="ai-box" th:if="${matchResult != null}">
+            <h3>🤖 AI Compatibility Breakdown</h3>
+            <p style="font-size:14px; color: #4338ca; font-weight:600; margin-bottom: 12px;" th:text="${matchResult.recommendationReason}">Reason</p>
+            
+            <div style="margin-bottom:10px;">
+                <strong style="font-size:13px; color:#15803d;">Matched Skills:</strong>
+                <span class="badge-green" th:each="m : ${matchResult.matchedSkills}" th:text="${m}">Skill</span>
+                <span th:if="${matchResult.matchedSkills.isEmpty()}" style="font-size:12px; color:var(--text-muted);">None exact</span>
+            </div>
+
+            <div>
+                <strong style="font-size:13px; color:#b91c1c;">Skill Gaps:</strong>
+                <span class="badge-red" th:each="mis : ${matchResult.missingSkills}" th:text="${mis}">Skill</span>
+                <span th:if="${matchResult.missingSkills.isEmpty()}" style="font-size:12px; color:#15803d;">No skill gaps detected!</span>
+            </div>
+        </div>
+
+        <div class="section-title">Project Overview & Objectives</div>
+        <div class="desc-text" th:text="${project.description}">Full description of the capstone project...</div>
+
+        <div class="section-title">Required Technical Skills</div>
+        <div>
+            <span class="skill-badge" th:each="sk : ${#strings.arraySplit(project.requiredSkills, ',')}" th:text="${#strings.trim(sk)}">Skill</span>
+        </div>
+
+        <div style="margin-top: 36px; display:flex; gap:12px; border-top: 1px solid var(--border); padding-top:24px;">
+            <!-- Register or Already Registered -->
+            <form th:if="${!isRegistered}" th:action="@{/student/project/register}" method="post">
+                <input type="hidden" name="projectId" th:value="${project.id}">
+                <button type="submit" class="btn btn-primary" style="padding: 14px 28px; font-size:15px;">📝 Register for Project</button>
+            </form>
+            <button th:if="${isRegistered}" class="btn btn-applied" style="padding: 14px 28px; font-size:15px;" disabled>✓ You Have Applied for This Project</button>
+
+            <a th:href="@{/student/skill-gap(projectId=${project.id})}" class="btn btn-outline">🔍 View Skill Gap Details</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

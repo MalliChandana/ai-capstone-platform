@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Reports & Evaluations | Admin Portal</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg: #0b0f19;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; }
+
+        .navbar {
+            background: #0f172a;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; font-size: 18px; font-weight: 800; }
+        .nav-links { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px; transition: all 0.2s; }
+        .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,0.08); }
+        .nav-link.btn-logout { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+
+        .table-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+        th { background: #0f172a; color: var(--text-muted); font-weight: 700; }
+
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-reviewed { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.3); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/admin/dashboard" class="brand">
+        <span>🛡️</span>
+        <span>Admin Control</span>
+    </a>
+    <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/students" class="nav-link">Students</a>
+        <a href="/admin/companies" class="nav-link">Companies</a>
+        <a href="/admin/projects" class="nav-link">Projects</a>
+        <a href="/admin/applications" class="nav-link">Applications</a>
+        <a href="/admin/reports" class="nav-link active">Reports</a>
+        <a href="/admin/audit-logs" class="nav-link">Audit Logs</a>
+        <a href="/admin/logout" class="nav-link btn-logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>📊 Capstone Final Reports & Evaluations</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Inspect submitted capstone documentation, company evaluations, and download verified PDF copies.</p>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Project Title</th>
+                    <th>Student Author</th>
+                    <th>Submitted On</th>
+                    <th>Evaluation Status</th>
+                    <th>Score / Grade</th>
+                    <th>Company Feedback</th>
+                    <th>Export PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${reports}">
+                    <td th:text="${r.id}">1</td>
+                    <td><strong th:text="${r.projectTitle}">Project Title</strong></td>
+                    <td>
+                        <div th:text="${r.studentName}">Student Name</div>
+                        <div style="font-size: 12px; color: var(--text-muted);" th:text="${r.studentEmail}">student@email.com</div>
+                    </td>
+                    <td th:text="${r.submittedDate != null ? r.submittedDate : 'N/A'}">2026-08-28</td>
+                    <td>
+                        <span class="badge badge-reviewed" th:if="${r.status == 'REVIEWED'}">REVIEWED</span>
+                        <span class="badge badge-pending" th:unless="${r.status == 'REVIEWED'}">SUBMITTED</span>
+                    </td>
+                    <td>
+                        <strong style="color: #6ee7b7;" th:if="${r.scoreOrGrade != null}" th:text="${r.scoreOrGrade}">A+</strong>
+                        <span th:unless="${r.scoreOrGrade != null}" style="color: var(--text-muted);">Pending</span>
+                    </td>
+                    <td style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #cbd5e1;" th:text="${r.companyFeedback != null ? r.companyFeedback : 'No feedback yet.'}">Feedback...</td>
+                    <td>
+                        <a th:href="@{/admin/report/download/{id}(id=${r.id})}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">📄 PDF</a>
+                    </td>
+                </tr>
+                <tr th:if="${reports.isEmpty()}">
+                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">No project reports submitted yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

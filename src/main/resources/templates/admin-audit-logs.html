@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Audit Logs | Admin Portal</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg: #0b0f19;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; }
+
+        .navbar {
+            background: #0f172a;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; font-size: 18px; font-weight: 800; }
+        .nav-links { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px; transition: all 0.2s; }
+        .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,0.08); }
+        .nav-link.btn-logout { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 24px; }
+        .filter-bar select {
+            padding: 10px 16px;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+
+        .table-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+        th { background: #0f172a; color: var(--text-muted); font-weight: 700; }
+
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-student { background: rgba(79, 70, 229, 0.2); color: #a5b4fc; border: 1px solid rgba(79, 70, 229, 0.3); }
+        .badge-company { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-admin { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-system { background: rgba(245, 158, 11, 0.2); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.3); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/admin/dashboard" class="brand">
+        <span>🛡️</span>
+        <span>Admin Control</span>
+    </a>
+    <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/students" class="nav-link">Students</a>
+        <a href="/admin/companies" class="nav-link">Companies</a>
+        <a href="/admin/projects" class="nav-link">Projects</a>
+        <a href="/admin/applications" class="nav-link">Applications</a>
+        <a href="/admin/reports" class="nav-link">Reports</a>
+        <a href="/admin/audit-logs" class="nav-link active">Audit Logs</a>
+        <a href="/admin/logout" class="nav-link btn-logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>📜 Platform Security & Activity Audit Trail</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Immutable event tracking for compliance, security audits, and lifecycle operations.</p>
+        </div>
+    </div>
+
+    <form action="/admin/audit-logs" method="get" class="filter-bar">
+        <select name="role" onchange="this.form.submit()">
+            <option value="ALL">All Actor Roles</option>
+            <option value="STUDENT" th:selected="${selectedRole == 'STUDENT'}">Students Only</option>
+            <option value="COMPANY" th:selected="${selectedRole == 'COMPANY'}">Companies Only</option>
+            <option value="ADMIN" th:selected="${selectedRole == 'ADMIN'}">Administrators Only</option>
+            <option value="SYSTEM" th:selected="${selectedRole == 'SYSTEM'}">System Events Only</option>
+        </select>
+        <a href="/admin/audit-logs" class="btn" style="background: #334155; color: white;" th:if="${selectedRole != null}">Reset</a>
+    </form>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Log ID</th>
+                    <th>Timestamp</th>
+                    <th>Actor Email</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                    <th>Event Details</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="l : ${logs}">
+                    <td th:text="${l.id}">1</td>
+                    <td style="color: var(--text-muted); white-space: nowrap;" th:text="${l.timestamp}">2026-08-28 08:30:00</td>
+                    <td th:text="${l.actorEmail}">user@domain.com</td>
+                    <td>
+                        <span class="badge badge-student" th:if="${l.actorRole == 'STUDENT'}">STUDENT</span>
+                        <span class="badge badge-company" th:if="${l.actorRole == 'COMPANY'}">COMPANY</span>
+                        <span class="badge badge-admin" th:if="${l.actorRole == 'ADMIN'}">ADMIN</span>
+                        <span class="badge badge-system" th:if="${l.actorRole == 'SYSTEM'}">SYSTEM</span>
+                    </td>
+                    <td><strong th:text="${l.action}">LOGIN</strong></td>
+                    <td style="color: #cbd5e1;" th:text="${l.details}">User logged in successfully</td>
+                    <td style="color: var(--text-muted); font-size: 12px;" th:text="${l.ipAddress}">127.0.0.1</td>
+                </tr>
+                <tr th:if="${logs.isEmpty()}">
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">No audit events recorded.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

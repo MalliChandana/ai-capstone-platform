@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started | AI Capstone Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --secondary-light: #f0f9ff;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top right, #e0e7ff 0%, #f8fafc 60%);
+            display: flex;
+            flex-direction: column;
+            color: var(--text-main);
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .brand-text {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        /* MAIN CONTAINER */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 30px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+        }
+
+        .header-section h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ROLES GRID */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            width: 100%;
+            margin-bottom: 32px;
+        }
+
+        .role-box {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .role-box.company-box:hover {
+            border-color: #0f172a;
+        }
+
+        .role-icon-box {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .student-icon-bg {
+            background: #eef2ff;
+        }
+
+        .company-icon-bg {
+            background: #f1f5f9;
+        }
+
+        .role-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-description {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-student {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-student:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-company {
+            background: #0f172a;
+            color: white;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+        }
+
+        .btn-company:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+        .role-login-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .role-login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .role-login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .company-box .role-login-link a {
+            color: #0f172a;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .back-home a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-home a:hover {
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 16px 20px; }
+            .roles-grid { grid-template-columns: 1fr; }
+            .header-section h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="brand">
+        <div class="brand-icon">✨</div>
+        <div class="brand-text">AI<span>Capstone</span></div>
+    </a>
+    <div class="nav-links">
+        <a href="/student/login" class="nav-link">Student Portal</a>
+        <a href="/company/login" class="nav-link">Company Portal</a>
+        <a href="/" class="nav-link">Home</a>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-container">
+    <div class="header-section">
+        <div class="badge-pill">✨ Join AI Capstone Platform</div>
+        <h1>How would you like to get started?</h1>
+        <p>Select your account type to access tailored tools, AI project matching, and collaboration features.</p>
+    </div>
+
+    <div class="roles-grid">
+        <!-- OPTION 1: STUDENT -->
+        <div class="role-box">
+            <div>
+                <div class="role-icon-box student-icon-bg">🎓</div>
+                <div class="role-title">Student</div>
+                <p class="role-description">
+                    Find AI-matched capstone projects, collaborate with companies, track progress, and submit project reports.
+                </p>
+            </div>
+            <div>
+                <a href="/student/register" class="btn btn-student">Create Student Account</a>
+                <div class="role-login-link">
+                    Already a Student? <a href="/student/login">Student Login</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPTION 2: COMPANY -->
+        <div class="role-box company-box">
+            <div>
+                <div class="role-icon-box company-icon-bg">🏢</div>
+                <div class="role-title">Company</div>
+                <p class="role-description">
+                    Post real-world capstone projects, find suitable students, track collaboration, and review project reports.
+                </p>
+            </div>
+            <div>
+                <a href="/company/register" class="btn btn-company">Create Company Account</a>
+                <div class="role-login-link">
+                    Already a Company? <a href="/company/login">Company Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-home">
+        <a href="/">← Return to Homepage</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Project Recommendations | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER NAVBAR */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        /* HEADER HERO */
+        .header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .header-card h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        /* RECOMMENDATION CARD */
+        .rec-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .rec-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+
+        .rec-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .rec-title-group h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .company-pill {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .match-score-badge {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            white-space: nowrap;
+        }
+
+        .rec-description {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .reason-box {
+            background: #eef2ff;
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #3730a3;
+            font-weight: 600;
+        }
+
+        .skills-section {
+            margin-bottom: 20px;
+        }
+
+        .skill-group-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .skill-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .badge-matched {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-missing {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .learning-box {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+
+        .learning-box h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .learning-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .learning-list li {
+            font-size: 12px;
+            color: #78350f;
+            background: #fde68a;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* ACTIONS */
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-applied {
+            background: #e2e8f0;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .rec-top { flex-direction: column; }
+            .card-actions { flex-direction: column; }
+            .card-actions .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link">Projects</a>
+        <a href="/student/recommendations" class="nav-link active">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}"
+                  style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px;">0</span>
+        </a>
+        <a href="/student/logout" class="btn btn-outline" style="font-size:13px; padding: 7px 14px; background: #fee2e2; color: #b91c1c; border: none; font-weight: 700;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- HEADER CARD -->
+    <div class="header-card">
+        <h1>🎯 AI-Powered Capstone Recommendations</h1>
+        <p>
+            Our intelligent recommendation algorithm analyzes your declared technical skills, department curriculum, and career interests against industry-posted capstones to rank the most relevant opportunities.
+        </p>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div th:if="${recommendations == null or recommendations.isEmpty()}" class="empty-state">
+        <div style="font-size: 48px; margin-bottom: 16px;">🔭</div>
+        <h3>No Project Recommendations Available</h3>
+        <p>There are currently no active capstones in the system, or your skill profile needs more details.</p>
+        <a href="/student/skills" class="btn btn-primary">Update My Skills</a>
+    </div>
+
+    <!-- RECOMMENDATION CARDS LIST -->
+    <div th:each="rec : ${recommendations}" class="rec-card">
+        
+        <div class="rec-top">
+            <div class="rec-title-group">
+                <h2 th:text="${rec.project.title}">Project Title</h2>
+                <div class="company-pill">
+                    🏢 <span th:text="${rec.project.companyName}">Company Name</span> &nbsp;•&nbsp; 
+                    🏷️ <span th:text="${rec.project.domain != null ? rec.project.domain : 'Computer Science'}">Domain</span> &nbsp;•&nbsp;
+                    ⏱️ <span th:text="${rec.project.duration != null ? rec.project.duration : '3 Months'}">Duration</span>
+                </div>
+            </div>
+            <div class="match-score-badge">
+                ⭐ <span th:text="${rec.matchPercentage}">88</span>% Match
+            </div>
+        </div>
+
+        <p class="rec-description" th:text="${rec.project.description}">
+            Project description text goes here...
+        </p>
+
+        <!-- RECOMMENDATION REASON -->
+        <div class="reason-box">
+            💡 <span th:text="${rec.recommendationReason}">Recommended because your skills match this project.</span>
+        </div>
+
+        <!-- SKILLS BREAKDOWN -->
+        <div class="skills-section">
+            <div class="skill-group-title" style="color: #166534;">✅ Matched Skills:</div>
+            <div class="skill-badges">
+                <span class="badge-matched" th:each="m : ${rec.matchedSkills}" th:text="${m}">Python</span>
+                <span th:if="${rec.matchedSkills.isEmpty()}" style="font-size:13px; color: var(--text-muted);">No exact matching skills found.</span>
+            </div>
+
+            <div class="skill-group-title" style="color: #991b1b; margin-top: 12px;">⚠️ Missing Skills / Prerequisites:</div>
+            <div class="skill-badges">
+                <span class="badge-missing" th:each="mis : ${rec.missingSkills}" th:text="${mis}">TensorFlow</span>
+                <span th:if="${rec.missingSkills.isEmpty()}" style="font-size:13px; color: #166534; font-weight:600;">You possess 100% of the required technical skills! 🎉</span>
+            </div>
+        </div>
+
+        <!-- LEARNING RECOMMENDATIONS -->
+        <div class="learning-box" th:if="${!rec.learningRecommendations.isEmpty()}">
+            <h4>📚 Recommended Learning Topics for this Capstone:</h4>
+            <ul class="learning-list">
+                <li th:each="learn : ${rec.learningRecommendations}" th:text="${learn}">Neural Networks</li>
+            </ul>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="card-actions">
+            <!-- If not yet registered -->
+            <form th:if="${!registeredProjectIds.contains(rec.project.id)}" th:action="@{/student/project/register}" method="post" style="display:inline;">
+                <input type="hidden" name="projectId" th:value="${rec.project.id}">
+                <button type="submit" class="btn btn-primary">📝 Register for Project</button>
+            </form>
+
+            <!-- If already registered -->
+            <button th:if="${registeredProjectIds.contains(rec.project.id)}" class="btn btn-applied" disabled>✓ Application Submitted</button>
+
+            <a th:href="@{/student/skill-gap(projectId=${rec.project.id})}" class="btn btn-outline">🔍 Skill Gap Details</a>
+            <a th:href="@{/student/project/{id}(id=${rec.project.id})}" class="btn btn-outline">ℹ️ Full Project Page</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

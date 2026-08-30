@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Tracking & Milestones | AI Capstone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+            margin: 32px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .card h1, .card h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* 7-MILESTONE TIMELINE */
+        .milestones-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 28px 0;
+        }
+
+        .milestone-step {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .milestone-step.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .milestone-step.completed {
+            border-color: var(--success);
+            background: #ecfdf5;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            margin: 0 auto 8px;
+        }
+
+        .milestone-step.active .step-num {
+            background: var(--primary);
+            color: white;
+        }
+
+        .milestone-step.completed .step-num {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        /* PROGRESS DISPLAY */
+        .progress-meter {
+            margin: 24px 0;
+        }
+
+        .meter-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .meter-track {
+            height: 16px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #0ea5e9, #10b981);
+            border-radius: 20px;
+            transition: width 0.4s ease;
+        }
+
+        /* FORM STYLING */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text-main);
+            background: #ffffff;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .alert-message {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .milestones-timeline { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/student/dashboard" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>AI Capstone</span>
+    </a>
+
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student/dashboard" class="nav-link">Dashboard</a>
+        <a href="/student/projects" class="nav-link">Projects</a>
+        <a href="/student/recommendations" class="nav-link">AI Recommendations</a>
+        <a href="/student/skills" class="nav-link">My Skills</a>
+        <a href="/student/skill-gap" class="nav-link">Skill Gap Analysis</a>
+        <a href="/student/my-registrations" class="nav-link">My Registrations</a>
+        <a href="/student/progress" class="nav-link active">Progress</a>
+        <a href="/student/reports" class="nav-link">Reports</a>
+    </div>
+
+    <div class="user-menu" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/student/notifications" style="text-decoration: none; font-size: 18px; position: relative;" title="Notifications">
+            🔔
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}"
+                  style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 10px;">0</span>
+        </a>
+        <a href="/student/logout" class="btn btn-outline" style="font-size:13px; padding: 7px 14px; background: #fee2e2; color: #b91c1c; border: none; font-weight: 700; text-decoration: none;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="alert-message" th:if="${message}" th:text="${message}"></div>
+
+    <!-- NO ACTIVE PROJECT EMPTY STATE -->
+    <div th:if="${selectedRegistration == null}" class="card" style="text-align: center; padding: 60px 24px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🚀</div>
+        <h2>No Active Capstone Projects</h2>
+        <p style="margin-bottom: 24px;">Progress tracking becomes active once a company accepts your capstone application.</p>
+        <a href="/student/projects" class="btn btn-primary">Browse & Apply for Projects</a>
+    </div>
+
+    <!-- ACTIVE PROGRESS TRACKER -->
+    <div th:if="${selectedRegistration != null}">
+        
+        <!-- HEADER & PROJECT SWITCHER -->
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                <div>
+                    <h1>🚀 Project Milestone & Progress Tracker</h1>
+                    <p style="font-size:15px; color:var(--text-main); font-weight:700; margin-top:4px;">
+                        Project: <span th:text="${selectedRegistration.projectTitle}">Project Title</span>
+                    </p>
+                </div>
+
+                <!-- PROJECT SELECTOR IF MULTIPLE -->
+                <form th:if="${registrations.size() > 1}" action="/student/progress" method="get">
+                    <select name="registrationId" onchange="this.form.submit()" style="min-width:240px; padding:8px 12px; font-weight:600;">
+                        <option th:each="r : ${registrations}"
+                                th:value="${r.id}"
+                                th:text="${r.projectTitle}"
+                                th:selected="${r.id == selectedRegistration.id}">Project</option>
+                    </select>
+                </form>
+            </div>
+
+            <!-- OVERALL PROGRESS BAR -->
+            <div class="progress-meter">
+                <div class="meter-header">
+                    <span>Overall Completion</span>
+                    <span style="color:var(--primary);" th:text="${selectedRegistration.progress} + '%'">60%</span>
+                </div>
+                <div class="meter-track">
+                    <div class="meter-fill" th:style="'width: ' + ${selectedRegistration.progress} + '%;'"></div>
+                </div>
+            </div>
+
+            <!-- 7-PHASE MILESTONES ROADMAP -->
+            <div class="milestones-timeline">
+                <div class="milestone-step" th:classappend="${selectedRegistration.progress >= 15 ? (selectedRegistration.progress > 15 ? 'completed' : 'active') : 'active'}">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Project Planning</div>
+                </div>
+
+                <div class="milestone-step" th:classappend="${selectedRegistration.progress >= 30 ? (selectedRegistration.progress > 30 ? 'completed' : 'active') : ''}">
+                    <div class="step-num">2</div>
+                    <div class="step-title">Requirement Analysis</div>
+                </div>
+
+                <div class="milestone-step" th:classappend="${selectedRegistration.progress >= 45 ? (selectedRegistration.progress > 45 ? 'completed' : 'active') : ''}">
+                    <div class="step-num">3</div>
+                    <div class="step-title">Design & Architecture</div>
+                </div>
+
+                <div class="milestone-step" th:classappend="${selectedRegistration.progress >= 65 ? (selectedRegistration.progress > 65 ? 'completed' : 'active') : ''}">
+                    <div class="step-num">4</div>
+                    <div class="step-title">Development</div>
+                </div>
+
+                <div class="milestone-step" th:classappend="${selectedRegistration.progress >= 80 ? (selectedRegistration.progress > 80 ? 'completed' : 'active') : ''}">
+                    <div class="step-num">5</div>
+                    <div class="step-title">Testing & Validation</div>
+                </div>
+
+                <div class="milestone-step" th:classappend="${selectedRegistration.progress >= 95 ? (selectedRegistration.progress > 95 ? 'completed' : 'active') : ''}">
+                    <div class="step-num">6</div>
+                    <div class="step-title">Final Review</div>
+                </div>
+
+                <div class="milestone-step" th:classappend="${selectedRegistration.progress >= 100 ? 'completed' : ''}">
+                    <div class="step-num">7</div>
+                    <div class="step-title">Completion 🏆</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- UPDATE PROGRESS FORM -->
+        <div class="card">
+            <h2>📝 Submit Milestone Progress Update</h2>
+            <p>Your updates are instantly synchronized to the collaborating organization's dashboard.</p>
+
+            <form action="/student/progress/update" method="post">
+                <input type="hidden" name="registrationId" th:value="${selectedRegistration.id}">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="currentMilestone">Active Milestone Phase *</label>
+                        <select id="currentMilestone" name="currentMilestone" required>
+                            <option value="1. Project Planning" th:selected="${selectedRegistration.currentMilestone == '1. Project Planning'}">1. Project Planning</option>
+                            <option value="2. Requirement Analysis" th:selected="${selectedRegistration.currentMilestone == '2. Requirement Analysis'}">2. Requirement Analysis</option>
+                            <option value="3. Design & Architecture" th:selected="${selectedRegistration.currentMilestone == '3. Design & Architecture'}">3. Design & Architecture</option>
+                            <option value="4. Development" th:selected="${selectedRegistration.currentMilestone == '4. Development'}">4. Development & Implementation</option>
+                            <option value="5. Testing & QA" th:selected="${selectedRegistration.currentMilestone == '5. Testing & QA'}">5. Testing & Validation</option>
+                            <option value="6. Final Review" th:selected="${selectedRegistration.currentMilestone == '6. Final Review'}">6. Final Review & Presentation</option>
+                            <option value="7. Project Completion" th:selected="${selectedRegistration.currentMilestone == '7. Project Completion'}">7. Project Completion</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="milestoneStatus">Milestone Status *</label>
+                        <select id="milestoneStatus" name="milestoneStatus" required>
+                            <option value="NOT_STARTED" th:selected="${selectedRegistration.milestoneStatus == 'NOT_STARTED' or selectedRegistration.milestoneStatus == 'Not Started'}">Not Started</option>
+                            <option value="IN_PROGRESS" th:selected="${selectedRegistration.milestoneStatus == 'IN_PROGRESS' or selectedRegistration.milestoneStatus == 'In Progress'}">In Progress</option>
+                            <option value="COMPLETED" th:selected="${selectedRegistration.milestoneStatus == 'COMPLETED' or selectedRegistration.milestoneStatus == 'Completed'}">Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="progressRange">Completion Percentage (<span id="progressVal" th:text="${selectedRegistration.progress}">0</span>%)</label>
+                        <input type="range" id="progressRange" name="progress" min="0" max="100" step="5"
+                               th:value="${selectedRegistration.progress}"
+                               oninput="document.getElementById('progressVal').innerText = this.value">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="studentRemarks">Student Update Remarks / Deliverables *</label>
+                        <textarea id="studentRemarks" name="studentRemarks" placeholder="Describe the tasks completed in this milestone, challenges faced, or links to code repositories..." required th:text="${selectedRegistration.studentRemarks}"></textarea>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <button type="submit" class="btn btn-primary">💾 Save & Sync Progress</button>
+                    <a th:href="@{/student/report/submit(registrationId=${selectedRegistration.id})}" class="btn" style="background:#059669; color:white;">📄 Submit Final Report</a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
