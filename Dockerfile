@@ -1,11 +1,11 @@
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
 COPY . .
 
 RUN chmod +x mvnw 2>/dev/null || true
-RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
+RUN if [ -f ./mvnw ]; then ./mvnw clean package -DskipTests; else mvn clean package -DskipTests; fi
 
 EXPOSE 8080
 
